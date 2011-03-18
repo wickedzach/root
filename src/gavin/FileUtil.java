@@ -2,9 +2,6 @@ package gavin;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 public class FileUtil {
 
@@ -55,27 +52,4 @@ public class FileUtil {
 		int index = name.lastIndexOf('.');
 		return index != -1 ? name.substring(index + 1).toLowerCase() : null;
 	}
-
-	// public static void convert(File file) throws IOException {
-	// if (file.isDirectory()) {
-	// File[] children = file.listFiles();
-	// if (children != null) {
-	// for (File child : children) {
-	// convert(child);
-	// }
-	// }
-	// }
-	// if (file.isFile()) {
-	// String text = IOUtil.read(file, "big5");
-	// OutputStream output = new FileOutputStream(file);
-	// output.write(text.getBytes("UTF-8"));
-	// output.flush();
-	// output.close();
-	// }
-	// }
-	//
-	// public static void main(String[] args) throws IOException {
-	// File d = new File("C:\\Documents and Settings\\gavin\\桌面\\aloha\\src");
-	// convert(d);
-	// }
 }

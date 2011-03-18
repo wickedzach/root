@@ -11,7 +11,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,20 +81,9 @@ public class Util {
 		extentions = null;
 	}
 
-	public static void call(Collection<Callback> callbacks, Object... parameters) {
-		Iterator<Callback> iterator = callbacks.iterator();
-		while (iterator.hasNext()) {
-			iterator.next().call(parameters);
-		}
-	}
-
 	public static BufferedImage captureScreen() throws AWTException {
 		Robot robot = new Robot();
 		Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		return robot.createScreenCapture(screenRect);
-	}
-
-	public static void main(String[] args) throws IOException, AWTException {
-		ImageIO.write(captureScreen(), "PNG", new File("C:\\Documents and Settings\\gavin\\桌面\\sss.png"));
 	}
 }
