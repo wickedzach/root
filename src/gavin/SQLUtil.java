@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class SQLUtil {
@@ -123,5 +127,56 @@ public class SQLUtil {
 
 	public static void delete(Connection connection, String table, Map<String, ?> keys) {
 		// TODO
+	}
+
+	public static boolean exists(Connection connection, String table, Map<String, ?> keys) throws SQLException {
+		StringBuilder s = new StringBuilder();
+		s.append("SELECT CASE WHEN EXISTS(SELECT 0 FROM ");
+		s.append(table);
+		boolean flag = keys != null && keys.size() > 0;
+
+		if (flag) {
+			Iterator<String> iter = keys.keySet().iterator();
+			s.append(" WHERE ").append(iter.next()).append("=?");
+			while (iter.hasNext()) {
+				s.append(" AND ").append(iter.next()).append("=?");
+			}
+		}
+		s.append(") THEN 1 ELSE NULL END");
+		PreparedStatement statement = connection.prepareStatement(s.toString());
+		if (flag) {
+			Iterator<?> iter = keys.values().iterator();
+			statement.setObject(1, iter.next());
+			int i = 2;
+			while (iter.hasNext()) {
+				statement.setObject(i++, iter.next());
+			}
+		}
+		ResultSet result = statement.executeQuery();
+		result.next();
+		flag = result.getBoolean(1);
+		result.close();
+		statement.close();
+
+		return flag;
+	}
+
+	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+		Class.forName("net.sourceforge.jtds.jdbc.Driver");
+		String url = "jdbc:jtds:sqlserver://127.0.0.1:1433/psOutLine";
+		String user = "sa";
+		String pass = "1qaz2wsx";
+		Connection connection = DriverManager.getConnection(url, user, pass);
+		Map<String, Object> keys;
+
+		keys = new HashMap<String, Object>();
+		keys.put("Miscode", "AA");
+		System.out.println(exists(connection, "syMisCode", keys));
+
+		keys = new HashMap<String, Object>();
+		keys.put("Miscode", "XX");
+		System.out.println(exists(connection, "syMisCode", keys));
+
+		connection.close();
 	}
 }

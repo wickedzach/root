@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -18,6 +19,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class Util {
+	private static char[] hex = "0123456789ABCDEF".toCharArray();
+
 	public static String getEncoding() {
 		return Charset.defaultCharset().name();
 	}
@@ -85,5 +88,27 @@ public class Util {
 		Robot robot = new Robot();
 		Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		return robot.createScreenCapture(screenRect);
+	}
+
+	public static String unicode(String string) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		for (char c : string.toCharArray()) {
+			try {
+				bos.write(unicode(c));
+			} catch (IOException e) {
+			}
+		}
+		return new String(bos.toByteArray());
+	}
+
+	public static byte[] unicode(char c) {
+		if (c < Byte.MAX_VALUE)
+			return new byte[] { (byte) c };
+		byte[] bytes = { 92, 117, 0, 0, 0, 0 };
+		bytes[2] = (byte) hex[c >> 12 & 0xf];
+		bytes[3] = (byte) hex[c >> 8 & 0xf];
+		bytes[4] = (byte) hex[c >> 4 & 0xf];
+		bytes[5] = (byte) hex[c & 0xf];
+		return bytes;
 	}
 }
