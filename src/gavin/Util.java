@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -110,5 +111,11 @@ public class Util {
 		bytes[4] = (byte) hex[c >> 4 & 0xf];
 		bytes[5] = (byte) hex[c & 0xf];
 		return bytes;
+	}
+
+	public static DecimalFormat getFormat(int number) {
+		byte[] tmp = new byte[number];
+		Arrays.fill(tmp, (byte) '0');
+		return new DecimalFormat(new String(tmp));
 	}
 }
