@@ -4,23 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class SQLUtil {
-	private static CharSequence process(CharSequence input) {
+	/**
+	 * Minify SQL statement
+	 * @param sql
+	 * @return minified sql from input
+	 */
+	private static CharSequence minify(CharSequence sql) {
 		StringBuilder m = new StringBuilder();
 		StringBuilder s = new StringBuilder();
 		int state = 0;
 		char c;
-		for (int i = 0, j = input.length(); i < j; i++) {
-			c = input.charAt(i);
+		for (int i = 0, j = sql.length(); i < j; i++) {
+			c = sql.charAt(i);
 			if (state == 1) { // in '
 				s.append(c);
 				if (c == '\'') {
@@ -32,7 +34,7 @@ public class SQLUtil {
 			} else if (state == 2) { // in /**/
 				if (c == '*') {
 					if ((i + 1) < j) {
-						if (input.charAt(i + 1) == '/') {
+						if (sql.charAt(i + 1) == '/') {
 							i++; // ignore next
 							state = 0;
 							continue;
@@ -53,7 +55,7 @@ public class SQLUtil {
 					continue;
 				} else if (c == '/') { // is going to /**/
 					if ((i + 1) < j) {
-						if (input.charAt(i + 1) == '*') {
+						if (sql.charAt(i + 1) == '*') {
 							i++; // ignore next
 							state = 2;
 							continue;
@@ -61,7 +63,7 @@ public class SQLUtil {
 					}
 				} else if (c == '-') { // is going to --
 					if ((i + 1) < j) {
-						if (input.charAt(i + 1) == '-') {
+						if (sql.charAt(i + 1) == '-') {
 							i++; // ignore next
 							state = 3;
 							continue;
@@ -96,25 +98,7 @@ public class SQLUtil {
 	}
 
 	public static String read(File file, String encoding) throws IOException {
-		return process(IOUtil.read(file, encoding)).toString();
-	}
-
-	// temp
-	public static Object[] scalar(Statement statement, int length, String sql) throws SQLException {
-		ResultSet rs = statement.executeQuery(sql);
-		if (rs.next()) {
-			if (length == -1) {
-				length = rs.getMetaData().getColumnCount();
-			}
-			Object[] result = new Object[length];
-			for (int i = 0, j = 1; i < result.length; i++, j++) {
-				result[i] = rs.getObject(j);
-			}
-			rs.close();
-			return result;
-		}
-		rs.close();
-		return null;
+		return minify(IOUtil.read(file, encoding)).toString();
 	}
 
 	public static void insert(Connection connection, String table, Map<String, ?> values) {
@@ -159,24 +143,5 @@ public class SQLUtil {
 		statement.close();
 
 		return flag;
-	}
-
-	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		Class.forName("net.sourceforge.jtds.jdbc.Driver");
-		String url = "jdbc:jtds:sqlserver://127.0.0.1:1433/psOutLine";
-		String user = "sa";
-		String pass = "1qaz2wsx";
-		Connection connection = DriverManager.getConnection(url, user, pass);
-		Map<String, Object> keys;
-
-		keys = new HashMap<String, Object>();
-		keys.put("Miscode", "AA");
-		System.out.println(exists(connection, "syMisCode", keys));
-
-		keys = new HashMap<String, Object>();
-		keys.put("Miscode", "XX");
-		System.out.println(exists(connection, "syMisCode", keys));
-
-		connection.close();
 	}
 }
