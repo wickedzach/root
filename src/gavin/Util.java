@@ -96,8 +96,7 @@ public class Util {
 		for (char c : string.toCharArray()) {
 			try {
 				bos.write(unicode(c));
-			} catch (IOException e) {
-			}
+			} catch (IOException e) {}
 		}
 		return new String(bos.toByteArray());
 	}
