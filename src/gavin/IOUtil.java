@@ -8,10 +8,39 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class IOUtil {
+	public static final OutputStream BLACK_HOLE = new OutputStream() {
+		@Override
+		public void write(int b) throws IOException {}
+
+		@Override
+		public void write(byte[] b) throws IOException {}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {}
+	};
+
+	/**
+	 * Use default buffer size 8192 to copy stream
+	 * 
+	 * @param input
+	 *            source stram
+	 * @param output
+	 *            destination stream
+	 * @throws IOException
+	 * @see gavin.IOUtil#copy(InputStream, OutputStream, bufferSize)
+	 */
 	public static void copy(InputStream input, OutputStream output) throws IOException {
 		copy(input, output, 8192);
 	}
 
+	/**
+	 * Copy stream with specified buffer size and close them automatically
+	 * 
+	 * @param input
+	 * @param output
+	 * @param bufferSize
+	 * @throws IOException
+	 */
 	public static void copy(InputStream input, OutputStream output, int bufferSize) throws IOException {
 		int len;
 		byte[] buffer = new byte[bufferSize];
