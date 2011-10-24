@@ -10,20 +10,23 @@ import java.io.OutputStream;
 public class IOUtil {
 	public static final OutputStream BLACK_HOLE = new OutputStream() {
 		@Override
-		public void write(int b) throws IOException {}
+		public void write(int b) throws IOException {
+		}
 
 		@Override
-		public void write(byte[] b) throws IOException {}
+		public void write(byte[] b) throws IOException {
+		}
 
 		@Override
-		public void write(byte[] b, int off, int len) throws IOException {}
+		public void write(byte[] b, int o, int l) throws IOException {
+		}
 	};
 
 	/**
 	 * Use default buffer size 8192 to copy stream
 	 * 
 	 * @param input
-	 *            source stram
+	 *            source stream
 	 * @param output
 	 *            destination stream
 	 * @throws IOException
