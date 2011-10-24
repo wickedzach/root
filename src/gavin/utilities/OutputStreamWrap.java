@@ -19,7 +19,7 @@ public class OutputStreamWrap extends OutputStream {
 
 	public OutputStreamWrap(PrintStream out) {
 		super();
-		this.out = null;
+		this.out = out;
 	}
 
 	@Override
@@ -86,5 +86,11 @@ public class OutputStreamWrap extends OutputStream {
 	public OutputStreamWrap w(byte[] b, int off, int len) throws IOException {
 		out.write(b, off, len);
 		return this;
+	}
+
+	// sample
+	public static void main(String[] args) throws IOException {
+		OutputStreamWrap out = new OutputStreamWrap(System.out);
+		out.w("Hello ".getBytes()).w("World!!".getBytes()).flush();
 	}
 }
