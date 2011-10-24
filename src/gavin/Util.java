@@ -1,5 +1,7 @@
 package gavin;
 
+import gavin.utilities.RandomInputStream;
+
 import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -7,7 +9,11 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -96,7 +102,8 @@ public class Util {
 		for (char c : string.toCharArray()) {
 			try {
 				bos.write(unicode(c));
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 		return new String(bos.toByteArray());
 	}
@@ -112,9 +119,56 @@ public class Util {
 		return bytes;
 	}
 
+	public static void hex(InputStream in, OutputStream out) throws IOException {
+		int len;
+		byte[] buf = new byte[8192];
+		PrintStream w = new PrintStream(out);
+		while ((len = in.read(buf)) != -1) {
+			for (int i = 0; i < len; i++) {
+				w.append(hex[buf[i] >> 4 & 0xf]).append(hex[buf[i] & 0xf]);
+			}
+		}
+	}
+
 	public static DecimalFormat getFormat(int number) {
 		byte[] tmp = new byte[number];
 		Arrays.fill(tmp, (byte) '0');
 		return new DecimalFormat(new String(tmp));
+	}
+
+	public static void invoke(String method, Object... objects) {
+		if (objects == null || objects.length == 0)
+			return;
+		for (Object object : objects) {
+			if (object == null)
+				return;
+			try {
+				object.getClass().getMethod(method).invoke(object);
+			} catch (Throwable e) {
+			}
+		}
+	}
+
+	public static void close(Object... objects) {
+		invoke("close", objects);
+	}
+
+	// sample
+	public static void main(String[] args) throws IOException {
+		InputStream input;
+		//
+		input = new FileInputStream(new File("src/gavin/Util.java"));
+		hex(input, System.out.append("0x"));
+		close(input);
+		//
+		System.out.println();
+		//
+		input = new RandomInputStream(16);
+		for (int i = 0; i < 16; i++) {
+			hex(input, System.out);
+			System.out.println();
+			input.reset();
+		}
+		close(input);
 	}
 }
