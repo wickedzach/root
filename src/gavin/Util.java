@@ -250,6 +250,7 @@ public class Util {
 	private static Pattern normalizeP0 = Pattern.compile("%([a-f][0-9a-f]|[0-9a-f][a-f])");
 	private static Pattern normalizeP1 = Pattern.compile("%(2[DE]|3[0-9]|[46][1-9]|5[0-9AF]|7[AE])");
 
+	@SuppressWarnings("unchecked")
 	public static String normalize(String url) throws MalformedURLException {
 		URL u = new URL(url);
 		StringBuilder s = new StringBuilder(url.length());
