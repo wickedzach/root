@@ -1,12 +1,11 @@
 package gavin.utilities;
 
+import gavin.Util;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
 
 public class RandomInputStream extends InputStream {
-	private static Random rand = new Random();
-
 	private int total;
 	private int count;
 
@@ -20,7 +19,7 @@ public class RandomInputStream extends InputStream {
 		if (count >= total)
 			return -1;
 		count++;
-		return rand.nextInt();
+		return Util.RAND.nextInt();
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class RandomInputStream extends InputStream {
 		if (count >= total)
 			return -1;
 		byte[] tmp = new byte[Math.min(available(), len)];
-		rand.nextBytes(tmp);
+		Util.RAND.nextBytes(tmp);
 		System.arraycopy(tmp, 0, b, off, tmp.length);
 		count += tmp.length;
 		return tmp.length;
