@@ -309,14 +309,14 @@ public class Util {
 		}
 		// Removing dot-segments. Removing duplicate slashes
 		path = path.replace("/./", "/").replaceAll("(/[^/]+)?/\\.\\./", "/").replaceAll("(/)/{1,999}", "$1");
-		// Removing directory index
-		String[][] def = { { "default", "index", "welcome" }, { "asp", "jsp", "php", "htm", "html" } };
-		for (int i = 0; i < def[0].length; i++) {
-			for (int j = 0; j < def[1].length; j++) {
-				StringBuilder append = new StringBuilder(def[0][i]).append('.').append(def[1][j]).append('$');
-				path = path.replaceFirst(append.toString(), EMPTY);
-			}
-		}
+		// XXX Removing directory index
+		// String[][] def = { { "default", "index", "welcome" }, { "asp", "jsp", "php", "htm", "html" } };
+		// for (int i = 0; i < def[0].length; i++) {
+		// for (int j = 0; j < def[1].length; j++) {
+		// StringBuilder append = new StringBuilder(def[0][i]).append('.').append(def[1][j]).append('$');
+		// path = path.replaceFirst(append.toString(), EMPTY);
+		// }
+		// }
 		s.append(path);
 		// Removing IP. Check if the IP address is the same as its domain name. Example:
 		// http://208.77.188.166/ → http://www.example.com/
