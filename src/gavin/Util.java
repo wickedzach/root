@@ -430,10 +430,17 @@ public class Util {
 		links.add("http://www.example.com/display?category=foo/bar+baz");
 		links.add("http://www.example.com/page.jsp?var[1]=foo&var[0]=bar");
 		links.add("http://www.google.com.tw/search?q=url+normalize+java&hl=zh-TW&client=ubuntu&hs=qgg&channel=cs&prmd=imvns&ei=uKSmTr63Ls-VmQWw1-y7Dw&start=10&sa=N&biw=1066&bih=738&%E4%B8%AD%E6%96%87=%EF%BC%8B");
-		//
-		for (String link : links) {
-			System.out.println(link + " → " + normalize(link));
+		for (int i = 0; i < 10; i++) {
+			links.addAll(links);
 		}
+		//
+		long cost = System.currentTimeMillis();
+		for (String link : links) {
+			// System.out.println(link + " → " + normalize(link));
+			normalize(link);
+		}
+		cost = System.currentTimeMillis() - cost;
+		System.out.printf("test %d links cost %dms avg %fms%n", links.size(), cost, (double) cost / links.size());
 		System.exit(0);
 		//
 		InputStream input;
