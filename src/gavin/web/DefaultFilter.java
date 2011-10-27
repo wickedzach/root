@@ -26,7 +26,7 @@ public class DefaultFilter implements Filter {
 		application = config.getServletContext();
 		encoding = config.getInitParameter("encoding");
 		if (Util.isEmpty(encoding)) {
-			encoding = Util.getEncoding();
+			encoding = Util.encoding();
 		}
 	}
 

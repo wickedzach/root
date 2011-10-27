@@ -60,7 +60,7 @@ public class IOUtil {
 	}
 
 	public static String read(File file) throws IOException {
-		return read(file, Util.getEncoding());
+		return read(file, Util.encoding());
 	}
 
 	public static String read(File file, String encoding) throws IOException {
@@ -68,7 +68,7 @@ public class IOUtil {
 	}
 
 	public static String read(InputStream input) throws IOException {
-		return read(input, Util.getEncoding());
+		return read(input, Util.encoding());
 	}
 
 	public static String read(InputStream input, String encoding) throws IOException {

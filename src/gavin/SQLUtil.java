@@ -97,7 +97,7 @@ public class SQLUtil {
 	}
 
 	public static String read(File file) throws IOException {
-		return read(file, Util.getEncoding());
+		return read(file, Util.encoding());
 	}
 
 	public static String read(File file, String encoding) throws IOException {
