@@ -6,6 +6,7 @@
 	<classpathentry kind="lib" path="lib/poi-3.7-20101029.jar"/>
 	<classpathentry kind="lib" path="lib/jtds-1.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/proguard.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="root" default="pack">
+	<taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar" />
 	<target name="pack">
 		<path id="cp">
 			<fileset dir="lib" includes="*.jar" />
@@ -7,7 +8,18 @@
 		<delete dir="tmp" />
 		<mkdir dir="tmp" />
 		<javac srcdir="src" destdir="tmp" classpathref="cp" encoding="UTF-8" includeantruntime="fasle" />
-		<jar destfile="${ant.project.name}.jar" basedir="tmp" />
+		<jar destfile="tmp/${ant.project.name}.tmp.jar" basedir="tmp" />
+
+		<proguard>
+		-libraryjars ${java.home}/lib/rt.jar:lib/servlet-api.jar
+		-injars      tmp/${ant.project.name}.tmp.jar
+		-outjars     ${ant.project.name}.jar
+		-optimizationpasses 3
+		-keep public class ** {
+			public protected *;
+		}
+		</proguard>
+		<delete file="${ant.project.name}.tmp.jar" />
 		<delete dir="tmp" />
 	</target>
 </project>
