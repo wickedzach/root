@@ -9,14 +9,14 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-public class SQLUtil {
+public final class SQLUtil {
 	/**
 	 * shrink SQL statement
 	 * 
 	 * @param sql
 	 * @return shrink SQL from input
 	 */
-	private static CharSequence shrink(CharSequence sql) {
+	private static final CharSequence shrink(CharSequence sql) {
 		StringBuilder m = new StringBuilder();
 		StringBuilder s = new StringBuilder();
 		int state = 0;
@@ -85,7 +85,7 @@ public class SQLUtil {
 		return m;
 	}
 
-	private static String handle(CharSequence s) {
+	private static final String handle(CharSequence s) {
 		String result = s.toString();
 		result = result.replaceAll("\\s+", " ");
 		result = result.replaceAll(" ?([\\+\\-\\*/%&\\|^\\!=<>~\\(\\)\\.,]) ?", "$1");
@@ -96,11 +96,11 @@ public class SQLUtil {
 		return result;
 	}
 
-	public static String read(File file) throws IOException {
+	public static final String read(File file) throws IOException {
 		return read(file, Util.encoding());
 	}
 
-	public static String read(File file, String encoding) throws IOException {
+	public static final String read(File file, String encoding) throws IOException {
 		return shrink(IOUtil.read(file, encoding)).toString();
 	}
 
@@ -116,7 +116,7 @@ public class SQLUtil {
 		// TODO
 	}
 
-	public static boolean exists(Connection connection, String table, Map<String, ?> keys) throws SQLException {
+	public static final boolean exists(Connection connection, String table, Map<String, ?> keys) throws SQLException {
 		StringBuilder s = new StringBuilder();
 		s.append("SELECT CASE WHEN EXISTS(SELECT 0 FROM ");
 		s.append(table);
