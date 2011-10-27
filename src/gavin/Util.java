@@ -309,7 +309,8 @@ public class Util {
 		}
 		// Removing dot-segments. Removing duplicate slashes
 		path = path.replace("/./", "/").replaceAll("(/[^/]+)?/\\.\\./", "/").replaceAll("(/)/{1,999}", "$1");
-		// XXX Removing directory index
+		// XXX Don't Do This or It was configured by site
+		// Removing directory index
 		// String[][] def = { { "default", "index", "welcome" }, { "asp", "jsp", "php", "htm", "html" } };
 		// for (int i = 0; i < def[0].length; i++) {
 		// for (int j = 0; j < def[1].length; j++) {
@@ -318,6 +319,7 @@ public class Util {
 		// }
 		// }
 		s.append(path);
+		// TODO
 		// Removing IP. Check if the IP address is the same as its domain name. Example:
 		// http://208.77.188.166/ → http://www.example.com/
 		// Removing the "?" when the query string is empty
@@ -337,24 +339,16 @@ public class Util {
 				String encoding = getEncoding();
 				try {
 					k = URLDecoder.decode(k, encoding);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+				} catch (UnsupportedEncodingException e) {}
 				try {
 					k = URLEncoder.encode(k, encoding);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+				} catch (UnsupportedEncodingException e) {}
 				try {
 					v = URLDecoder.decode(v, encoding);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+				} catch (UnsupportedEncodingException e) {}
 				try {
 					v = URLEncoder.encode(v, encoding);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+				} catch (UnsupportedEncodingException e) {}
 				if (map.containsKey(k)) {
 					if (map.get(k) instanceof String) {
 						Collection<String> a = new ArrayList<String>(split.length);
@@ -394,8 +388,12 @@ public class Util {
 				}
 			}
 			map = null;
+			//
+			// XXX Don't Do This or It was configured by site
 			// Removing arbitrary querystring variables. An active page may expect certain variables to appear in the querystring; all unexpected variables should be removed. Example:
 			// http://www.example.com/display?id=123&fakefoo=fakebar → http://www.example.com/display?id=123
+			//
+			// XXX Don't Do This or It was configured by site
 			// Removing default querystring variables. A default value in the querystring will render identically whether it is there or not. When a default value appears in the querystring, it can be removed. Example:
 			// http://www.example.com/display?id=&sort=ascending → http://www.example.com/display
 		}
@@ -441,7 +439,6 @@ public class Util {
 		}
 		cost = System.currentTimeMillis() - cost;
 		System.out.printf("test %d links cost %dms avg %fms%n", links.size(), cost, (double) cost / links.size());
-		System.exit(0);
 		//
 		InputStream input;
 		//

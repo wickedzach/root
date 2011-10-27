@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="project" default="default">
-	<target name="default">
-		<echo>hello</echo>
+<project name="root" default="pack">
+	<target name="pack">
+		<path id="cp">
+			<fileset dir="lib" includes="*.jar" />
+		</path>
+		<delete dir="tmp" />
+		<mkdir dir="tmp" />
+		<javac srcdir="src" destdir="tmp" classpathref="cp" encoding="UTF-8" includeantruntime="fasle" />
+		<jar destfile="${ant.project.name}.jar" basedir="tmp" />
+		<delete dir="tmp" />
 	</target>
 </project>
