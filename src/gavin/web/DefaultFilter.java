@@ -1,6 +1,5 @@
 package gavin.web;
 
-import gavin.IOUtil;
 import gavin.Util;
 
 import java.io.ByteArrayOutputStream;
@@ -17,6 +16,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.IOUtils;
+
 public class DefaultFilter implements Filter {
 	private ServletContext application;
 	private String encoding;
@@ -31,8 +33,7 @@ public class DefaultFilter implements Filter {
 	}
 
 	@Override
-	public void destroy() {
-	}
+	public void destroy() {}
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -52,8 +53,15 @@ public class DefaultFilter implements Filter {
 		//
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		PrintStream output = new PrintStream(buffer);
-		IOUtil.copy(request.getInputStream(), output);
-		output.append("\ncost " + cost + " milliseconds").flush();
-		application.log(new String(buffer.toByteArray(), encoding));
+		try {
+			IOUtils.copy(request.getInputStream(), output);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		output.printf("%ncost %d milliseconds", cost).flush();
+		//
+		application.log(StringUtils.newString(buffer.toByteArray(), encoding));
+		buffer = null;
+		output = null;
 	}
 }

@@ -1,12 +1,14 @@
 package gavin;
 
 import static gavin.Util.*;
+import static org.junit.Assert.*;
 import gavin.utilities.RandomInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Test;
@@ -22,6 +24,7 @@ public class TestUtil {
 			input.reset();
 		}
 		close(input);
+
 	}
 
 	@Test
@@ -51,13 +54,79 @@ public class TestUtil {
 		links.add("http://www.example.com/display?category=foo/bar+baz");
 		links.add("http://www.example.com/page.jsp?var[1]=foo&var[0]=bar");
 		links.add("http://www.google.com.tw/search?q=url+normalize+java&hl=zh-TW&client=ubuntu&hs=qgg&channel=cs&prmd=imvns&ei=uKSmTr63Ls-VmQWw1-y7Dw&start=10&sa=N&biw=1066&bih=738&%E4%B8%AD%E6%96%87=%EF%BC%8B");
-		for (int i = 0; i < 10; i++) {
-			links.addAll(links);
-		}
 		//
 		for (String link : links) {
 			System.out.println(link + " → " + normalize(link));
 		}
 	}
 
+	@Test
+	public void testToday() throws IOException {
+		String toady = toady();
+		delay(1000);
+		assertTrue(toady == toady());
+		delay(1000);
+		assertTrue(toady == toady());
+	}
+
+	@Test
+	public void testTime() throws IOException {
+		String time = time();
+		delay(500);
+		assertTrue(time == time());
+		delay(500);
+		assertFalse(time == time());
+		delay(500);
+		assertFalse(time == time());
+	}
+
+	@Test
+	public void testNow() throws IOException {
+		String now = now();
+		delay(500);
+		assertTrue(now == now());
+		delay(500);
+		assertFalse(now == now());
+		delay(500);
+		assertFalse(now == now());
+	}
+
+	@Test
+	public void testGenerate() throws IOException {
+		int round = 10, length = 12;
+		StringBuilder s = new StringBuilder();
+		char[] cs;
+		//
+		s.append("0123456789");
+		cs = s.toString().toCharArray();
+		System.out.printf("cs %d%s%n", cs.length, Arrays.toString(cs));
+		for (int i = 0; i < round; i++) {
+			System.out.println(generate(length, cs));
+		}
+		cs = null;
+		//
+		s.append("abcdefghijklmnopqrstuvwxyz");
+		cs = s.toString().toCharArray();
+		System.out.printf("cs %d%s%n", cs.length, Arrays.toString(cs));
+		for (int i = 0; i < round; i++) {
+			System.out.println(generate(length, cs));
+		}
+		cs = null;
+		//
+		s.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		cs = s.toString().toCharArray();
+		System.out.printf("cs %d%s%n", cs.length, Arrays.toString(cs));
+		for (int i = 0; i < round; i++) {
+			System.out.println(generate(length, cs));
+		}
+		cs = null;
+		//
+		s.append("0123456789");
+		cs = s.toString().toCharArray();
+		System.out.printf("cs %d%s%n", cs.length, Arrays.toString(cs));
+		for (int i = 0; i < round; i++) {
+			System.out.println(generate(length, cs));
+		}
+		cs = null;
+	}
 }

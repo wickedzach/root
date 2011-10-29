@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+
 public final class SQLUtil {
 	/**
 	 * shrink SQL statement
@@ -101,7 +103,7 @@ public final class SQLUtil {
 	}
 
 	public static final String read(File file, String encoding) throws IOException {
-		return shrink(IOUtil.read(file, encoding)).toString();
+		return shrink(FileUtils.readFileToString(file, encoding)).toString();
 	}
 
 	public static void insert(Connection connection, String table, Map<String, ?> values) {

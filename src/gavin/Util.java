@@ -1,5 +1,7 @@
 package gavin;
 
+import gavin.utilities.MatcherEnumeration;
+
 import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -20,10 +22,15 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,32 +86,26 @@ public final class Util {
 	public static final String EMPTY = "".intern();
 	public static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-	public static final boolean isEmpty(String string) {
-		return string == null || string.length() == 0;
+	public static final boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
+
+	public static final String noEmpty(String str, String def) {
+		return isEmpty(str) ? def : str;
+	}
+
+	// jdbc4 only
+	public static final Connection conn(String url, String usr, String pwd) {
+		try {
+			return DriverManager.getConnection(url, usr, pwd);
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		}
+		return null;
 	}
 
 	public static final Enumeration<String> enumeration(String text, Pattern pattern, int group) {
 		return new MatcherEnumeration(pattern.matcher(text), group);
-	}
-
-	private static final class MatcherEnumeration implements Enumeration<String> {
-		private Matcher matcher;
-		private int group;
-
-		public MatcherEnumeration(Matcher matcher, int group) {
-			this.matcher = matcher;
-			this.group = group;
-		}
-
-		@Override
-		public boolean hasMoreElements() {
-			return matcher.find();
-		}
-
-		@Override
-		public String nextElement() {
-			return matcher.group(group);
-		}
 	}
 
 	public static final DecimalFormat getFormat(int number) {
@@ -440,12 +441,85 @@ public final class Util {
 		return generate(len, tempalte);
 	}
 
-	public static final char[] generate(int len, char[] template) {
+	public static final char[] generate(int len, char[] chars) {
 		char[] res = new char[len];
-		Random rand = rand();
-		for (int i = 0, j = template.length; i < res.length; i++) {
-			res[i] = template[rand.nextInt(j)];
+		for (int i = 0, j = chars.length; i < res.length; i++) {
+			// java.lang.Math.random() is faster than java.util.Random.nextInt(int)
+			res[i] = chars[(int) Math.floor(Math.random() * j)];
 		}
 		return res;
+	}
+
+	public static final String FMT_DATE = "yyyy-MM-dd";
+	public static final String FMT_TIME = "HH:mm:ss";
+	public static final String FMT_DATETIME = new StringBuffer(FMT_DATE).append(' ').append(FMT_TIME).toString();
+
+	public static SimpleDateFormat SDF_DATE = new SimpleDateFormat(FMT_DATE);
+	public static SimpleDateFormat SDF_TIME = new SimpleDateFormat(FMT_TIME);
+	public static SimpleDateFormat SDF_DATETIME = new SimpleDateFormat(FMT_DATETIME);
+
+	private static final Date _DATE = new Date(-1);
+	private static final Date _TIME = new Date(-1);
+	private static final Date _DATETIME = new Date(-1);
+
+	private static String cacheDATE = null;
+	private static String cacheTIME = null;
+	private static String cacheDATETIME = null;
+
+	public static final String date(Date date) {
+		return SDF_DATE.format(date);
+	}
+
+	public static final String time(Date time) {
+		return SDF_TIME.format(time);
+	}
+
+	public static final String datetime(Date datetime) {
+		return SDF_DATETIME.format(datetime);
+	}
+
+	public static final String toady() { // return today
+		if (cacheDATE != null && System.currentTimeMillis() / 86400000 == _DATE.getTime() / 86400000) {
+			return cacheDATE;
+		}
+		_DATE.setTime(System.currentTimeMillis());
+		return cacheDATE = date(_DATE);
+	}
+
+	public static final String time() { // return current time
+		if (cacheTIME != null && System.currentTimeMillis() - _TIME.getTime() < 1000) {
+			return cacheTIME;
+		}
+		_TIME.setTime(System.currentTimeMillis());
+		return cacheTIME = time(_TIME);
+	}
+
+	public static final String now() { // return current date time
+		if (cacheDATETIME != null && System.currentTimeMillis() - _DATETIME.getTime() < 1000) {
+			return cacheDATETIME;
+		}
+		_DATETIME.setTime(System.currentTimeMillis());
+		return cacheDATETIME = datetime(_DATETIME);
+	}
+
+	public static final void delay(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {}
+	}
+
+	public static void main(String[] args) {
+		String toady = toady();
+		delay(1000);
+		System.out.println(toady == toady());
+		//
+		String time = time();
+		delay(500);
+		System.out.println(time == time());
+		delay(500);
+		System.out.println(time == time());
+		delay(500);
+		System.out.println(time == time());
+		//
 	}
 }
