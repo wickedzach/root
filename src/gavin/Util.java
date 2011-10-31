@@ -507,19 +507,4 @@ public final class Util {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {}
 	}
-
-	public static void main(String[] args) {
-		String toady = toady();
-		delay(1000);
-		System.out.println(toady == toady());
-		//
-		String time = time();
-		delay(500);
-		System.out.println(time == time());
-		delay(500);
-		System.out.println(time == time());
-		delay(500);
-		System.out.println(time == time());
-		//
-	}
 }
