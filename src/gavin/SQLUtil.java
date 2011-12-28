@@ -3,13 +3,24 @@ package gavin;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONAware;
+import org.json.simple.JSONValue;
 
 public final class SQLUtil {
 	/**
@@ -146,5 +157,155 @@ public final class SQLUtil {
 		flag = result.getBoolean(1);
 		Util.close(result, statement);
 		return flag;
+	}
+
+	public static final String toJSONString(ResultSet rest) throws SQLException {
+		List<Map<String, Object>> rows = new ArrayList<>();
+		if (rest.next()) {
+			ResultSetMetaData metadata = rest.getMetaData();
+			String[] label = new String[metadata.getColumnCount()];
+			int[] type = new int[metadata.getColumnCount()];
+			for (int i = 0, j = 1; i < label.length; i++, j++) {
+				label[i] = metadata.getColumnLabel(j);
+				type[i] = metadata.getColumnType(j);
+			}
+			metadata = null;
+			//
+			Map<String, Object> row;
+			rows.add(row = new HashMap<>(label.length));
+			for (int i = 0, j = 1; i < label.length; i++, j++) {
+				row.put(label[i], new ResultSetJSON(rest.getObject(j), type[i]));
+			}
+			while (rest.next()) {
+				rows.add(row = new HashMap<>(label.length));
+				for (int i = 0, j = 1; i < label.length; i++, j++) {
+					row.put(label[i], new ResultSetJSON(rest.getObject(j), type[i]));
+				}
+			}
+			row = null;
+		}
+		return JSONArray.toJSONString(rows);
+	}
+
+	static class ResultSetJSON implements JSONAware {
+		static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+		static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+		static SimpleDateFormat BOTH_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		Object value;
+		int type;
+
+		public ResultSetJSON(Object value, int type) {
+			super();
+			if (value != null) {
+				switch (type) {
+				case Types.NULL:
+					value = null;
+					break;
+				case Types.DATE:
+					value = DATE_FORMAT.format(((java.sql.Date) value).getTime());
+					break;
+				case Types.TIME:
+					value = TIME_FORMAT.format(((java.sql.Time) value).getTime());
+					break;
+				case Types.TIMESTAMP:
+					value = BOTH_FORMAT.format(((java.sql.Timestamp) value).getTime());
+					break;
+				case Types.BINARY:
+				case Types.VARBINARY:
+				case Types.LONGVARBINARY:
+					value = Hex.encodeHexString((byte[]) value);
+					break;
+				case Types.ARRAY:
+					java.sql.Array arr = ((java.sql.Array) value);
+					try (ResultSet rest = arr.getResultSet()) {
+						List<Object> array = new ArrayList<>();
+						while (rest.next()) {
+							array.add(new ResultSetJSON(rest.getObject(2), arr.getBaseType()));
+						}
+						value = JSONArray.toJSONString(array);
+						arr.free();
+						array.clear();
+					} catch (SQLException e) {}
+					break;
+				default:
+					break;
+				// BIT
+				// TINYINT
+				// SMALLINT
+				// INTEGER
+				// BIGINT
+				// FLOAT
+				// REAL
+				// DOUBLE
+				// NUMERIC
+				// DECIMAL
+				// CHAR
+				// VARCHAR
+				// LONGVARCHAR
+				// OTHER
+				// JAVA_OBJECT
+				// DISTINCT
+				// STRUCT
+				// BLOB
+				// CLOB
+				// REF
+				// DATALINK
+				// BOOLEAN
+				// ROWID
+				// NCHAR
+				// NVARCHAR
+				// LONGNVARCHAR
+				// NCLOB
+				// SQLXML
+				}
+			}
+			this.value = value;
+			this.type = type;
+		}
+
+		public String toJSONString() {
+			return JSONValue.toJSONString(value);
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		String url, usr, pwd, sql;
+
+		url = "jdbc:mysql://192.168.8.168:3306/misc";
+		usr = "root";
+		pwd = "";
+		//
+		// url = "jdbc:postgresql://192.168.8.168:5432/b2b";
+		// usr = "postgres";
+		// pwd = "";
+		//
+
+		// sql = "SELECT * FROM counter LIMIT 10;";
+		// sql = "SELECT * FROM \"BMain\" LIMIT 10";
+		try (Connection conn = DriverManager.getConnection(url, usr, pwd)) {
+			try (ResultSet rest = conn.getMetaData().getTables(null, null, null, new String[] { "TABLE" })) {
+				System.out.println(toJSONString(rest));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			try (ResultSet rest = conn.getMetaData().getColumns(null, null, null, null)) {
+				System.out.println(toJSONString(rest));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			//
+			// try (Statement stat = conn.createStatement()) {
+			// try (ResultSet rest = stat.executeQuery(sql)) {
+			// System.out.println(toJSONString(rest));
+			// } catch (Exception e) {
+			// System.out.println(e.getMessage());
+			// }
+			// } catch (Exception e) {
+			// System.out.println(e.getMessage());
+			// }
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }
