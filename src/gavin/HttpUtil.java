@@ -56,16 +56,4 @@ public class HttpUtil {
 		socket.close();
 		return null;
 	}
-
-	public static void main(String[] args) throws IOException {
-		// String url =
-		// "http://www.pcstore.com.tw/adm/opt/set_ap.php?val=eCNII5JSURlSSlEdUWSKI04jOVmJWHtIgE05JIojUCM5NkgZSRtNHkwfOSSKI0gbUQuKXodIjFuDSIVKhE45JIojSyM5TIwcegtSXFEfUQt4W4tIgE05JIojTyM5GkccTx5OHE4LUlxRIVELjFx8W3ZZgE05JIojSRlRC4tYhWJ2Vn1bV1GGXYRKgFVFTIZWOSSUZjMyMzM%3D";
-		String url = "http://www.findprice.com.tw/url.aspx?m=6&n=ASROCK%e8%8f%af%e6%93%8eN68-VS3+FX%e4%b8%bb%e6%a9%9f%e6%9d%bf&u=http%3a%2f%2fwww.pcstore.com.tw%2fadm%2fopt%2fset_ap.php%3fval%3deCNII5JSURlSSlEdUWSKI04jOVmJWHtIgE05JIojUCM5NkgZSRtNHkwfOSSKI0gbUQuKXodIjFuDSIVKhE45JIojSyM5TIwcegtSXFEfUQt4W4tIgE05JIojTyM5GkccTx5OHE4LUlxRIVELjFx8W3ZZgE05JIojSRlRC4tYhWJ2Vn1bV1GGXYRKgFVFTIZWOSSUZjMyMzM%253D&t=1";
-
-		Collection<String> follows = follow(url, null, null, 10);
-		for (String follow : follows) {
-			System.out.println(follow);
-		}
-		// System.out.println(follow(url, null, null));
-	}
 }
